@@ -1,5 +1,6 @@
 package com.rf.blogapp.controller;
 
+import com.rf.blogapp.dto.UserRequest;
 import com.rf.blogapp.entity.User;
 import com.rf.blogapp.service.UserService;
 import jakarta.validation.Valid;
@@ -17,7 +18,7 @@ public class UserController {
     private UserService userService;
     // kullanıcı oluştur
     @PostMapping("/save")
-    public ResponseEntity<?> save(@Valid @RequestBody User user){
+    public ResponseEntity<?> save(@Valid @RequestBody UserRequest user){
         return userService.createUser(user);
     }
     // kullanıcı giriş

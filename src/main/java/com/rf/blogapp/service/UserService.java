@@ -1,25 +1,35 @@
 package com.rf.blogapp.service;
 
 import com.rf.blogapp.configuration.WebConfiguration;
+import com.rf.blogapp.dto.UserRequest;
 import com.rf.blogapp.dto.UserResponse;
 import com.rf.blogapp.entity.User;
 import com.rf.blogapp.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final WebConfiguration configuration;
+    private final MailService mailService;
 
-    public ResponseEntity<?> createUser(User user){
+    @Transactional(rollbackOn = MailException.class)
+    public ResponseEntity<?> createUser(UserRequest user){
         user.setPassword(configuration.getPasswordEncoder().encode(user.getPassword()));
-        userRepository.save(user);
+        User user1=user.toUser();
+        user1.setActivationCode(UUID.randomUUID().toString());
+        userRepository.save(user1);
+        mailService.sendActivationMessage(user1);
         UserResponse userResponse=UserResponse.builder()
                 .email(user.getEmail())
-                .id(user.getId()).username(user.getUsername())
+                .id(user1.getId()).username(user.getUsername())
                 .build();
         return ResponseEntity.ok(userResponse);
     }
