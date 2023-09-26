@@ -1,5 +1,6 @@
 package com.rf.blogapp.error;
 
+import com.rf.blogapp.exception.ActivationTokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -20,7 +21,13 @@ public class GlobalExceptionHandler {
             validationErrors.put(fieldError.getField(),fieldError.getDefaultMessage());
         }
         apiError=ApiError.builder().
-        status(400).errors(validationErrors).message("error").path("validationErrors").build();
+        status(400).timestamp(apiError.getTimestamp()).errors(validationErrors).message("error").path("validationErrors").build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 }
+    @ExceptionHandler(ActivationTokenException.class)
+    public ResponseEntity<ApiError> activationException(ActivationTokenException ex){
+        ApiError apiError=new ApiError();
+        apiError=ApiError.builder().path("api/v1/users").timestamp(apiError.getTimestamp()).status(400).message(ex.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
 }
