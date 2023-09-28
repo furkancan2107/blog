@@ -1,6 +1,8 @@
 package com.rf.blogapp.error;
 
 import com.rf.blogapp.exception.ActivationTokenException;
+import com.rf.blogapp.exception.UserNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -25,9 +27,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 }
     @ExceptionHandler(ActivationTokenException.class)
-    public ResponseEntity<ApiError> activationException(ActivationTokenException ex){
+    public ResponseEntity<ApiError> activationException(ActivationTokenException ex,HttpServletRequest request){
         ApiError apiError=new ApiError();
-        apiError=ApiError.builder().path("api/v1/users").timestamp(apiError.getTimestamp()).status(400).message(ex.getMessage()).build();
+        apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(400).message(ex.getMessage()).build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiError> userNotFoundException(UserNotFoundException ex, HttpServletRequest request){
+        ApiError apiError=new ApiError();
+        apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(404).message(ex.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+    }
+
+
 }

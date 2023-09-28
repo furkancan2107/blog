@@ -1,12 +1,16 @@
 package com.rf.blogapp.controller;
 
 import com.rf.blogapp.dto.UserRequest;
+import com.rf.blogapp.dto.UserResponse;
 import com.rf.blogapp.entity.User;
 import com.rf.blogapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -25,4 +29,13 @@ public class UserController {
     }
     // kullanıcı giriş
     // şifremi unuttum
+    // tüm kullanıcılari getir
+    @GetMapping("/getUsers")
+    public Page<UserResponse> getUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
+        return userService.getUsers(page,size);
+    }
+    @GetMapping("/getUser/{id}")
+    public UserResponse getUser(@PathVariable Long id){
+        return userService.getUser(id);
+    }
 }
