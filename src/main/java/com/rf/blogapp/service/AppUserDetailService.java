@@ -1,6 +1,7 @@
 package com.rf.blogapp.service;
 
 import com.rf.blogapp.entity.User;
+import com.rf.blogapp.exception.LoginActivationTokenException;
 import com.rf.blogapp.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +18,9 @@ public class AppUserDetailService implements UserDetailsService {
         User user=userService.findByEmail(email);
         if(user==null){
             throw new UserNotFoundException();
+        }
+        else if(!user.isEnabled()){
+            throw new LoginActivationTokenException();
         }
         return user;
     }

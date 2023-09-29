@@ -30,7 +30,6 @@ public class User implements UserDetails {
     private String password;
     private boolean active=false;
     private String activationCode;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return AuthorityUtils.createAuthorityList("ROLE_USER");
@@ -39,12 +38,10 @@ public class User implements UserDetails {
     public String getPassword(){
         return password;
     }
-
     @Override
     public String getUsername() {
         return username;
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
@@ -60,9 +57,8 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
     @Override
     public boolean isEnabled() {
-        return true;
+        return active;
     }
 }

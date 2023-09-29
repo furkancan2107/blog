@@ -1,10 +1,12 @@
 package com.rf.blogapp.error;
 
 import com.rf.blogapp.exception.ActivationTokenException;
+import com.rf.blogapp.exception.LoginActivationTokenException;
 import com.rf.blogapp.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,6 +40,13 @@ public class GlobalExceptionHandler {
         apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(404).message(ex.getMessage()).build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
+    @ExceptionHandler(LoginActivationTokenException.class)
+    public ResponseEntity<ApiError> loginActivationException(LoginActivationTokenException ex,HttpServletRequest request){
+        ApiError apiError=new ApiError();
+        apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(401).message(ex.getMessage()).build();
+        return ResponseEntity.status(401).body(apiError);
+    }
+
 
 
 }

@@ -1,7 +1,4 @@
 package com.rf.blogapp.service;
-
-import com.rf.blogapp.configuration.WebConfiguration;
-import com.rf.blogapp.dto.UserRegister;
 import com.rf.blogapp.dto.UserRequest;
 import com.rf.blogapp.dto.UserResponse;
 import com.rf.blogapp.entity.User;
@@ -13,16 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -66,8 +59,6 @@ Page<User> userPage=userRepository.findAll(PageRequest.of(page,size));
                 .email(user.getEmail())
                 .build();
     }
-
-
     public UserResponse getUser(Long id) {
         User user=userRepository.findById(id).orElseThrow(()->new UserNotFoundException());
         return convertToUserResponse(user);
