@@ -1,6 +1,6 @@
 package com.rf.blogapp.service;
 import com.rf.blogapp.dto.UserRequest;
-import com.rf.blogapp.dto.UserResponse;
+import com.rf.blogapp.dto.UserDto;
 import com.rf.blogapp.entity.User;
 import com.rf.blogapp.exception.ActivationTokenException;
 import com.rf.blogapp.exception.UserNotFoundException;
@@ -32,11 +32,11 @@ public class UserService {
         user1.setActivationCode(UUID.randomUUID().toString());
         userRepository.save(user1);
         mailService.sendActivationMessage(user1);
-        UserResponse userResponse=UserResponse.builder()
+        UserDto userDto = UserDto.builder()
                 .email(user.getEmail())
                 .id(user1.getId()).username(user.getUsername())
                 .build();
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.ok(userDto);
     }
     public ResponseEntity<?> activateUser(String token){
         User user=userRepository.findByActivationCode(token);
@@ -48,23 +48,30 @@ public class UserService {
         userRepository.save(user);
         return ResponseEntity.ok("Hesap Aktif oldu");
     }
-    public Page<UserResponse> getUsers(int page,int size){
+    public Page<UserDto> getUsers(int page, int size){
 Page<User> userPage=userRepository.findAll(PageRequest.of(page,size));
         return userPage.map(this::convertToUserResponse);
     }
-    private UserResponse convertToUserResponse(User user) {
-        return UserResponse.builder()
+    private UserDto convertToUserResponse(User user) {
+        return UserDto.builder()
                 .username(user.getUsername())
                 .id(user.getId())
                 .email(user.getEmail())
                 .build();
     }
-    public UserResponse getUser(Long id) {
+    public UserDto getUser(Long id) {
         User user=userRepository.findById(id).orElseThrow(()->new UserNotFoundException());
         return convertToUserResponse(user);
     }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public boolean existById(Long userId) {
+        return userRepository.existsById(userId);
+    }
+    public User findByUser(Long id){
+        return userRepository.findById(id).orElseThrow();
     }
 }
