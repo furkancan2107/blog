@@ -38,7 +38,7 @@ public class BlogController {
     }
     // tüm blogları Page formatında getir
     @GetMapping("/getBlogs")
-    public Page<BlogDto> getBlogList(){
-        return blogService.getBlogList();
+    public Page<BlogDto> getBlogList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
+        return blogService.getBlogList(page,size);
     }
 }
