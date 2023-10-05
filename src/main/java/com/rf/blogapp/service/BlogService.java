@@ -4,7 +4,7 @@ import com.rf.blogapp.dto.BlogDto;
 import com.rf.blogapp.dto.BlogRequest;
 import com.rf.blogapp.dto.DtoConverter;
 import com.rf.blogapp.entity.Blog;
-import com.rf.blogapp.exception.BlogNotFoundException;
+import com.rf.blogapp.exception.NotFoundException;
 import com.rf.blogapp.exception.UserNotFoundException;
 import com.rf.blogapp.repository.BlogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,13 +38,13 @@ public class BlogService {
 
     public ResponseEntity<?> deleteBlog(Long id) {
         if(!blogRepository.existsById(id)){
-           throw new BlogNotFoundException(id);
+           throw new NotFoundException(id+" numaralı blog bulunamadi");
         }
         return ResponseEntity.ok(id+ "numaralı blog silindi");
     }
 
     public ResponseEntity<?> updateBlog(BlogRequest blogRequest,Long blogId) {
-        Blog blog=blogRepository.findById(blogId).orElseThrow(()->new BlogNotFoundException(blogId));
+        Blog blog=blogRepository.findById(blogId).orElseThrow(()->new NotFoundException(blogId+" numaralı blog bulunamadi"));
         blog.setContent(blogRequest.getContent());
         blog.setTitle(blogRequest.getTitle());
         blogRepository.save(blog);
@@ -68,4 +67,11 @@ public class BlogService {
 
     }
 
+    public boolean existById(Long id) {
+        return blogRepository.existsById(id);
+    }
+
+    public Blog findById(Long blogId) {
+        return blogRepository.findById(blogId).orElseThrow(()->new NotFoundException(blogId+" numaralı blog yazısı bulunamadı"));
+    }
 }

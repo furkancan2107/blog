@@ -1,7 +1,7 @@
 package com.rf.blogapp.error;
 
 import com.rf.blogapp.exception.ActivationTokenException;
-import com.rf.blogapp.exception.BlogNotFoundException;
+import com.rf.blogapp.exception.NotFoundException;
 import com.rf.blogapp.exception.LoginActivationTokenException;
 import com.rf.blogapp.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,8 +46,8 @@ public class GlobalExceptionHandler {
         apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(401).message(ex.getMessage()).build();
         return ResponseEntity.status(401).body(apiError);
     }
-    @ExceptionHandler(BlogNotFoundException.class)
-    public ResponseEntity<ApiError> blogDeleteException(BlogNotFoundException ex, HttpServletRequest request){
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError> blogDeleteException(NotFoundException ex, HttpServletRequest request){
         ApiError apiError=new ApiError();
         apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(401).message(ex.getMessage()).build();
         return ResponseEntity.status(401).body(apiError);

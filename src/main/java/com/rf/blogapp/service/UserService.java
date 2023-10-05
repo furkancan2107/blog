@@ -72,6 +72,6 @@ Page<User> userPage=userRepository.findAll(PageRequest.of(page,size));
         return userRepository.existsById(userId);
     }
     public User findByUser(Long id){
-        return userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id).orElseThrow(()->new UserNotFoundException());
     }
 }
