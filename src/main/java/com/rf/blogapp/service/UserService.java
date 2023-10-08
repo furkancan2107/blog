@@ -1,8 +1,13 @@
 package com.rf.blogapp.service;
+import com.rf.blogapp.dto.AuthResponse;
+import com.rf.blogapp.dto.LoginDto;
 import com.rf.blogapp.dto.UserRequest;
 import com.rf.blogapp.dto.UserDto;
+import com.rf.blogapp.entity.Token;
 import com.rf.blogapp.entity.User;
 import com.rf.blogapp.exception.ActivationTokenException;
+import com.rf.blogapp.exception.LoginActivationTokenException;
+import com.rf.blogapp.exception.LoginException;
 import com.rf.blogapp.exception.UserNotFoundException;
 import com.rf.blogapp.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -22,6 +27,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final MailService mailService;
+    private final TokenService tokenService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -30,6 +36,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User user1=user.toUser();
         user1.setActivationCode(UUID.randomUUID().toString());
+        user1.setActive(true);
         userRepository.save(user1);
         mailService.sendActivationMessage(user1);
         UserDto userDto = UserDto.builder()
@@ -63,6 +70,17 @@ Page<User> userPage=userRepository.findAll(PageRequest.of(page,size));
         User user=userRepository.findById(id).orElseThrow(()->new UserNotFoundException());
         return convertToUserResponse(user);
     }
+    public AuthResponse login(LoginDto loginDto){
+        User user=userRepository.findByEmail(loginDto.getEmail());
+        if(user==null) throw new LoginException();
+        if(!passwordEncoder.matches(loginDto.getPassword(),user.getPassword())) throw new LoginException();
+        if(!user.isActive()) throw new LoginActivationTokenException();
+        Token token=tokenService.createToken(user);
+        AuthResponse authResponse=new AuthResponse();
+        authResponse.setUser(convertToUserResponse(user));
+        authResponse.setToken(token);
+        return authResponse;
+    }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -73,5 +91,9 @@ Page<User> userPage=userRepository.findAll(PageRequest.of(page,size));
     }
     public User findByUser(Long id){
         return userRepository.findById(id).orElseThrow(()->new UserNotFoundException());
+    }
+
+    public void logout(String authorization) {
+        tokenService.logout(authorization);
     }
 }

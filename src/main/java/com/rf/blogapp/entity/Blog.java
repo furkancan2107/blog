@@ -18,6 +18,8 @@ public class Blog {
     private Long id;
     private String title;
     private String content;
+    @Lob
+    private String image;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

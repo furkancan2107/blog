@@ -28,7 +28,7 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
     private String password;
-    private boolean active=false;
+    private boolean active=true;
     private String activationCode;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,5 +1,6 @@
 package com.rf.blogapp.configuration;
 
+import com.rf.blogapp.compenent.TokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class WebConfiguration {
     @Autowired
     private AuthEntryPoint authEntryPoint;
+    @Autowired
+    private TokenFilter tokenFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -32,8 +36,9 @@ public class WebConfiguration {
         //http.httpBasic(Customizer.withDefaults());
         // security hatalarını almak için aşağıdaki gibi
         http.httpBasic(httpBasic->httpBasic.authenticationEntryPoint(authEntryPoint));
-        http.csrf(csrt->csrt.disable());
+        http.csrf(csrf->csrf.disable());
         http.headers(headers->headers.disable());
+        http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean

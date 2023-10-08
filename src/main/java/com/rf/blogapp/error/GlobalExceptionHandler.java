@@ -1,9 +1,6 @@
 package com.rf.blogapp.error;
 
-import com.rf.blogapp.exception.ActivationTokenException;
-import com.rf.blogapp.exception.NotFoundException;
-import com.rf.blogapp.exception.LoginActivationTokenException;
-import com.rf.blogapp.exception.UserNotFoundException;
+import com.rf.blogapp.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +45,18 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> blogDeleteException(NotFoundException ex, HttpServletRequest request){
+        ApiError apiError=new ApiError();
+        apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(401).message(ex.getMessage()).build();
+        return ResponseEntity.status(401).body(apiError);
+    }
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<ApiError> LoginException(LoginException ex, HttpServletRequest request){
+        ApiError apiError=new ApiError();
+        apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(401).message(ex.getMessage()).build();
+        return ResponseEntity.status(401).body(apiError);
+    }
+    @ExceptionHandler(DeleteTokenException.class)
+    public ResponseEntity<ApiError> DeleteTokenException(DeleteTokenException ex, HttpServletRequest request){
         ApiError apiError=new ApiError();
         apiError=ApiError.builder().path(request.getRequestURI()).timestamp(apiError.getTimestamp()).status(401).message(ex.getMessage()).build();
         return ResponseEntity.status(401).body(apiError);
